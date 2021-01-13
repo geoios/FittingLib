@@ -25,14 +25,14 @@ for j=1:n1
     elseif strcmp(type1,'mapf')
         str1 = '(1+(a1/(1+(a2/(1+a3)))))/';
         str2  = '(x+(a1/(x+(a2/(x+a3)))))';
-        ft1 = fittype(['a*' str1 str2],...
+        ft1=fittype(['a*' str1 str2],...
                        'dependent',{'y'},'independent',{'x'},...
                        'coefficients',{'a','a1','a2','a3'});
         opts = fitoptions( ft1 );
-        opts = fitoptions('Method','NonlinearLeastSquares');
-        opts.Lower = [-100 -100 -100 -100];  %范围下限
-        opts.StartPoint = [2,-0.05,-0.05,-2];   %开始点
-        opts.Upper = [100 100 100 100];  %范围上限
+        opts=fitoptions('Method','NonlinearLeastSquares');
+        opts.Lower=[-100 -100 -100 -100];  %范围下限
+        opts.StartPoint=[2,-0.05,-0.05,-2];   %开始点
+        opts.Upper=[100 100 100 100];  %范围上限
         [fitresult, gof] = fit( x, y, ft1, opts );
         a1 = coeffvalues(fitresult);
     end

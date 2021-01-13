@@ -1,4 +1,4 @@
-function [p,S,mu] = Wpolyfit(x,y,n,w)
+function [p,S,mu,r] = Wpolyfit(x,y,n,w)
 %POLYFIT Fit polynomial to data.
 %   P = POLYFIT(X,Y,N) finds the coefficients of a polynomial P(X) of
 %   degree N that fits the data Y best in a least-squares sense. P is a
@@ -44,6 +44,9 @@ if ~isequal(size(x),size(y))
     error(message('MATLAB:polyfit:XYSizeMismatch'))
 end
 
+
+Weightd = diag(w);
+
 x = x(:);
 y = y(:);
 
@@ -58,7 +61,8 @@ for j = n:-1:1
     V(:,j) = x.*V(:,j+1);
 end
 %% weighting operations
-for i = 1:length(x)
+m = length(x);
+for i = 1:m
     temp = sqrt(w(i));
     V(i,:) = V(i,:) * temp;
     y(i)   = y(i)   * temp;
@@ -81,6 +85,7 @@ if size(R,2) > size(R,1)
 elseif warnIfLargeConditionNumber(R)
     if nargout > 2
         warning(message('MATLAB:polyfit:RepeatedPoints'));
+%         pause
     else
         warning(message('MATLAB:polyfit:RepeatedPointsOrRescale'));
     end
@@ -93,7 +98,14 @@ if nargout > 1
     % freedom and the norm of the residuals.
     S.R = R;
     S.df = max(0,length(y) - (n+1));
-    S.normr = norm(r);
+    S.vpv = r'*r;
+    S.sig = norm(S.vpv/(m-n-1));
+    S.Qx = inv(R'*R);
+    Res = y - V*p;
+    for i = 1:m
+        Res(i) = Res(i)*sqrt(w(i));
+    end
+    S.Res = Res;
 end
 
 p = p.'; % Polynomial coefficients are row vectors by convention.
