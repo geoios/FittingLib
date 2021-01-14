@@ -8,4 +8,4 @@ end
 y     = a * Par';
 D_y   = a * D_Par*a';
 Sig_y = sqrt(D_y);
-end
+end  
